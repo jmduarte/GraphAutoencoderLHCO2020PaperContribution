@@ -78,7 +78,7 @@ We note that the architecture itself is insensitive to the ordering of the input
 PyTorch Geometric supports variable-size input graphs so there is no need for zero-padding.
 
 % loss function and training
-The model is trained with two different loss functions. 
+The model is trained on the QCD background dataset with two different loss functions. 
 The first is the mean squared error (MSE) between the input and output particles. 
 This choice of loss function violates the permutation invariance of the algorithm because the particles must be reconstructed in the same order as they are input to achieve a small value of the loss function.
 For this reason, we also investigate a second, alternative loss function, the nearest neighbor distance $D^\mathrm{NN}$, whose value does not depend on either the order of the input particles or the reconstructed particles~\cite{sparsegen_vae}.
