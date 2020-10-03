@@ -64,8 +64,8 @@ A schematic of this is shown in Fig.~\ref{fig:gae}.
 % gnn architecture
 The PGAE model is constructed using the PyTorch Geometric library~\cite{PyTorchGeometric}.
 In this model, the input node features are first processed by a batch normalization layer~\cite{batchnorm}.
-The encoder is an edge convolution layer~\cite{DGCNN}, built from a fully connected neural network $\phi_\mathrm{e}$ with layers of sizes $(8, 32, 32, 2)$ and rectified linear activation unit (ReLU) activation functions~\cite{relu}.
-The first layer of dimension $8$ represents the input, which is given by $(\boldsymbol{p}_i, \boldsymbol{p}_j-\boldsymbol{p}_i)$, where $\boldsymbol{p}_i$ ($\boldsymbol{p}_j$) is the four-momentum for particle $i$ ($j$) and $i\neq j$.
+The encoder is an edge convolution layer~\cite{DGCNN}, built from a fully connected neural network $\phi_\mathrm{e}$ with layers of sizes $(32, 32, 2)$ and rectified linear activation unit (ReLU) activation functions~\cite{relu}.
+The network takes in an 8-dimensional input, which is given by $(\boldsymbol{p}_i, \boldsymbol{p}_j-\boldsymbol{p}_i)$, where $\boldsymbol{p}_i$ ($\boldsymbol{p}_j$) is the four-momentum for particle $i$ ($j$) and $i\neq j$.
 The final layer produces a two-dimensional message vector from each pair of distinct particles.
 These two-dimensional message vectors are aggregated (using a mean function) for each receiving particle
 \begin{equation}
@@ -73,8 +73,9 @@ These two-dimensional message vectors are aggregated (using a mean function) for
 \end{equation}
 where $\mathcal N(i)$ is the neighborhood of particles connected to the $i$th particle, which corresponds to all other particles in this case.
 This summed message $\vec h_i$ is the bottleneck or encoded representation for the $i$th particle.
-The decoder is also an edge convolution layer, containing a network $\phi_\mathrm{d}$ with layers of sizes $(4, 32, 32, 4)$ and ReLU activation functions, except for the final layer, which reconstructs each particle's momentum.
-We note that the architecture itself is insensitive to the ordering of the input particles. 
+The decoder is also an edge convolution layer, containing a network $\phi_\mathrm{d}$ with layers of sizes $(32, 32, 4)$ and ReLU activation functions, except for the final layer.
+The input is a 4-dimensional vector representing $(\boldsymbol{h}_i, \boldsymbol{h}_j-\boldsymbol{h}_i)$ and the output is intended to reconstruct each particle's momentum.
+We note that the architecture itself is insensitive to the ordering and number of input particles. 
 PyTorch Geometric supports variable-size input graphs so there is no need for zero-padding.
 
 % loss function and training
