@@ -82,7 +82,7 @@ PyTorch Geometric supports variable-size input graphs so there is no need for ze
 The model is trained on the QCD background dataset with two different loss functions. 
 The first is the mean squared error (MSE) between the input and output particles. 
 This choice of loss function violates the permutation invariance of the algorithm because the particles must be reconstructed in the same order as they are input to achieve a small value of the loss function.
-For this reason, we also investigate a second, alternative loss function, the nearest neighbor distance $D^\mathrm{NN}$, whose value does not depend on either the order of the input particles or the reconstructed particles~\cite{sparsegen_vae}.
+For this reason, we also investigate a second, alternative loss function, the Chamfer distance loss, whose value does not depend on either the order of the input particles or the reconstructed particles~\cite{10.5555/1622943.1622971,Fan_2017_CVPR,Zhang2020FSPool}.
 Given two input sets of particles $\mathcal{M}$ and $\mathcal{N}$, expressed in terms of the momentum vectors $\boldsymbol{p}_i$ and $\boldsymbol{p}_j$ (with $i \in \mathcal{M}$ and $j \in \mathcal{N}$), the loss function is defined as
 \begin{equation}
 D^\mathrm{NN}(\mathcal{M}, \mathcal{N}) =  \frac{1}{|\mathcal{M}|}\sum_{i \in \mathcal{M}} \min_{j \in \mathcal{N}} \left(||\boldsymbol{p}_i - \boldsymbol{p}_j||\right)^2 + \frac{1}{|\mathcal{N}|}\sum_{j \in \mathcal{N}} \min_{i \in \mathcal{M}} \left(||\boldsymbol{p}_i - \boldsymbol{p}_j||\right)^2\,,
@@ -100,7 +100,7 @@ where $||\boldsymbol{p}_i-\boldsymbol{p}_j||$ is the Euclidean distance.
 \includegraphics[width=0.24\textwidth]{figures/gae_sparseloss/GNN_AE_EdgeConv_$p_x$.pdf}
 \includegraphics[width=0.24\textwidth]{figures/gae_sparseloss/GNN_AE_EdgeConv_$p_y$.pdf}
 \includegraphics[width=0.24\textwidth]{figures/gae_sparseloss/GNN_AE_EdgeConv_$p_z$.pdf}
-\caption{Comparison of input and reconstructed features $E$ (far left), $p_x$ (center left), $p_y$ (center right), and $p_z$ (far right) for the models trained with MSE (top) and $D^\mathrm{NN}$ (bottom) loss functions on the QCD testing dataset.
+\caption{Comparison of input and reconstructed features $E$ (far left), $p_x$ (center left), $p_y$ (center right), and $p_z$ (far right) for the models trained with MSE (top) and Chamfer (bottom) loss functions on the QCD testing dataset.
 %The format of the input differs between the two autoencoders, hence differences in the distributions along the same features.
 }
 \label{fig:reconstruction}
@@ -112,14 +112,14 @@ where $||\boldsymbol{p}_i-\boldsymbol{p}_j||$ is the Euclidean distance.
 
 First, we studied our algorithm on the R\&D dataset.
 As the truth information is provided, we can create a receiver operating characteristic (ROC) curve to determine the effectiveness of the PGAE to identify a signal ($\PWpr\to\PX\PY$, $\PX\to\Pq\Pq$, and $\PY\to\Pq\Pq$ with $m_{\PWpr} = 3.5$~TeV, $m_\PX = 500$~GeV, and $m_\PY= 100$~GeV) that it did not observe during training.
-The ROC curves for both the MSE and $D^\mathrm{NN}$ loss functions are shown in Fig.~\ref{fig:rocs}.
+The ROC curves for both the MSE and Chamfer loss functions are shown in Fig.~\ref{fig:rocs}.
 Although the MSE loss is not permutation invariant, we find it provides better discrimination for a new unseen signal.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.45\textwidth]{figures/gae_mse/roc.pdf}
     \includegraphics[width=0.45\textwidth]{figures/gae_sparseloss/roc.pdf}
-    \caption{ROC curves for the PGAE trained with the MSE (left) and $D^\mathrm{NN}$ loss (right).}
+    \caption{ROC curves for the PGAE trained with the MSE (left) and Chamfer loss (right).}
     \label{fig:rocs}
 \end{figure}
 
@@ -154,9 +154,9 @@ We choose the variable-width mass binning from the CMS dijet searches~\cite{Siru
 We look for resonances in windows spanning two to five bins.
 With the MSE model in BB 1, we identify a possible resonance around $3.9$~TeV with a local significance of $2.1\,\sigma$, which is close to the region of the injected dijet resonance with $m_\PZpr=3823$~GeV.
 In BB 2 using the same model, the most discernable bump lies around $3.3$~TeV with a small local significance of $0.8\,\sigma$, which agrees with the fact that BB 2 has no injected signal. 
-For the model trained with the $D^\mathrm{NN}$ loss, a $1.5\,\sigma$ excess is seen at $2.8$~TeV in BB 1 and a $-1.4\,\sigma$ excess at $5.1$~TeV in BB 2. 
+For the model trained with the Chamfer loss, a $1.5\,\sigma$ excess is seen at $2.8$~TeV in BB 1 and a $-1.4\,\sigma$ excess at $5.1$~TeV in BB 2. 
 Neither is significant.
-As noted previously, the permutation invariant $D^\mathrm{NN}$ loss performs worse at the unsupervised anomaly detection task.
+As noted previously, the permutation invariant Chamfer loss performs worse at the unsupervised anomaly detection task.
 This may be due to the minimization, which will often return a smaller loss value than MSE even for poorly reconstructed, anomalous jets.
 Fig.~\ref{fig:gnnaebumps} shows the BH results for BBs 1 and 2 using the models trained with both losses.
 
@@ -174,13 +174,13 @@ Fig.~\ref{fig:gnnaebumps} shows the BH results for BBs 1 and 2 using the models 
     \end{subfigure}
     \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\textwidth]{figures/gae_sparseloss/bb1_EdgeNetSparseLoss_bumphunter.pdf}
-        \caption*{BB 1, $D^\mathrm{NN}$, $1.5\,\sigma$ at $2.8$~TeV}
+        \caption*{BB 1, Chamfer, $1.5\,\sigma$ at $2.8$~TeV}
     \end{subfigure}
     \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\textwidth]{figures/gae_sparseloss/bb2_EdgeNetSparseLoss_bumphunter.pdf}
-        \caption*{BB 2, $D^\mathrm{NN}$, $-1.4\,\sigma$ at $5.1$~TeV}
+        \caption*{BB 2, Chamfer, $-1.4\,\sigma$ at $5.1$~TeV}
     \end{subfigure}
-\caption{Bump hunt in the dijet invariant mass in BB 1 (left) and 2 (right) using MSE (top) and $D^\mathrm{NN}$ (bottom) as the loss functions.
+\caption{Bump hunt in the dijet invariant mass in BB 1 (left) and 2 (right) using MSE (top) and Chamfer (bottom) as the loss functions.
 Outlier jets have a reconstruction loss in the top 10\% with respect to the corresponding BB. 
 Outlier events are required to have both jets be outliers.
 BB 1 has an anomalous large-radius dijet signal $\PZpr \to \PX\PY \to (\Pq\Pq)(\Pq\Pq)$ injected at $m_\PZpr=3823$~GeV (with $m_\PX = 732$~GeV and $m_\PY= 378$~GeV), while BB 2 has no injected anomalies.
